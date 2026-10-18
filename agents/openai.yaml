@@ -1,0 +1,4 @@
+interface:
+  display_name: "WorkBuddy 后台协作"
+  short_description: "后台派发机械任务、查询进度、取消任务并回收可独立复核的产物"
+  default_prompt: "使用 $workbuddy-worker 将明确的资料整理任务交给 WorkBuddy 后台完成并核对结果。"

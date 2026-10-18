@@ -1,0 +1,11 @@
+{
+  "repository": "https://github.com/jiang198012/workbuddian",
+  "commit": "568e7596bab6efe9c6173d0b2c62102bf156afa2",
+  "license": "MIT",
+  "files": {
+    "workbuddyBroker.ts": "9822cb1a2a0973d2872fd01cf45bb3433f24b6f62f35ecef07c17fe371af046d",
+    "workbuddyModels.ts": "7450b5b3695337bbc11e685148b2f31f7780d6ac802b6cc1aca0ada4c1fa420c",
+    "LICENSE": "6bc6a7b44f1c3998fe435a568e0969552ce312b86228dd6af7b9cc6cabc3cbcc"
+  },
+  "adaptation": "Reuse original-account broker handshake and model catalog only. Custom worker has no repository tools."
+}

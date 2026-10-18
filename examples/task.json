@@ -1,0 +1,9 @@
+{
+  "cwd": ".",
+  "task": "Summarize example.csv by year. Return JSON with year, rows, valid, mean. Do not replace missing values with zero.",
+  "files": [
+    "examples/example.csv"
+  ],
+  "model": "deepseek-v4.1-flash",
+  "timeout_seconds": 180
+}
