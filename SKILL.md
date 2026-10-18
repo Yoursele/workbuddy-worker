@@ -42,7 +42,9 @@ node "$HOME/.codex/skills/workbuddy-worker/scripts/workbuddy_worker.cjs" list
 
 - 任务保存在 `~/.codex/workbuddy-jobs/<id>/`，包括状态、输入哈希和 result.txt/result.json。与桌面聊天历史分开，不保证出现在 WorkBuddy 侧栏。
 - 输入总量上限240KiB，单任务上限900秒。宿主内部请求仍受自身超时和大小限制，大任务拆成小批次。
-- 桌面须保持登录、运行。代理不可用时明确失败，不切其他账号，不读取登录数据库或导出账号token。
+- 自动检测本机安装并连接；桌面未运行时尝试后台启动，最多等待25秒（不超过任务总预算），已运行则直接复用。首次安装初始化、登录或桌面授权仍需用户完成。代理不可用时明确失败，不切其他账号，不读取登录数据库或导出账号token。
 - CLI仍可能宣告内置工具；转发器剥离工具定义和工具提示词，拒绝工具响应。因此是受控纯文本worker，不是任意桌面操作agent。
 - 调用消耗原 WorkBuddy 账号额度；usage是上游报告，不是已核实人民币费用。缺失的实际响应模型保持null。
 - 内部WBIPC接口不保证升级稳定。来源、检查和接手说明见 [references/transport.md](references/transport.md)。
+
+- 自动启动使用隐藏进程选项，仍可能因宿主版本或首次登录出现窗口；已运行的应用不关闭或重启。细节见transport说明。

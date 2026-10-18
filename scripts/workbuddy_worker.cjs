@@ -11,6 +11,14 @@ const {
   connectWorkbuddyBroker,
   loadWorkbuddyModelConfig,
 } = require("./vendor/workbuddy.cjs");
+const { connectDesktop } = require("./desktop_startup.cjs");
+const STARTUP_HINTS = {
+  WORKBUDDY_CLI_NOT_FOUND: "未找到受支持的WorkBuddy安装或CLI运行时，请安装并完成首次初始化",
+  WORKBUDDY_DESKTOP_NOT_FOUND: "未找到WorkBuddy桌面程序，请检查安装",
+  WORKBUDDY_START_TIMEOUT: "WorkBuddy启动后代理仍未就绪，请检查首次初始化、登录或桌面授权",
+  WORKBUDDY_START_FAILED: "WorkBuddy后台启动失败，请检查安装或系统权限",
+  WORKBUDDY_PROCESS_CHECK_FAILED: "无法确认WorkBuddy运行状态，未盲目重复启动",
+};
 const ROOT = path.join(
   process.env.CODEX_HOME || path.join(os.homedir(), ".codex"),
   "workbuddy-jobs",
@@ -62,6 +70,7 @@ function locate() {
   if (!fs.existsSync(entry) || !nodes.length) fail("WORKBUDDY_CLI_NOT_FOUND");
   return {
     node: nodes[0],
+    desktop: path.join(base, "WorkBuddy.exe"),
     entry,
     product: path.join(cli, "product.json"),
     config: path.join(os.homedir(), ".workbuddy"),
@@ -430,10 +439,9 @@ async function run(id, deps = {}) {
       fail("CANCELLED_BEFORE_START");
     }
     const runtime = (deps.locate || locate)();
-    broker = await (deps.connect || connectWorkbuddyBroker)(
-      runtime.config,
-      controller.signal,
-    );
+    const ready = await connectDesktop(runtime, deps.connect || connectWorkbuddyBroker, controller.signal, deps.startup);
+    broker = ready.broker;
+    save({ desktop_started: ready.desktop_started });
     const product = read(runtime.product),
       config = await (deps.loadModels || loadWorkbuddyModelConfig)(
         broker,
@@ -732,19 +740,24 @@ async function run(id, deps = {}) {
 }
 async function doctor() {
   const r = locate();
+  const controller = new AbortController();
+  const deadline = setTimeout(() => controller.abort(), 40000);
   let b;
   try {
-    b = await connectWorkbuddyBroker(r.config);
-    const config = await loadWorkbuddyModelConfig(b, read(r.product));
+    const ready = await connectDesktop(r, connectWorkbuddyBroker, controller.signal);
+    b = ready.broker;
+    const config = await loadWorkbuddyModelConfig(b, read(r.product), controller.signal);
     return {
       ok: true,
       cli: r.entry,
       node: r.node,
       auth_route: "desktop-wbipc",
+      desktop_started: ready.desktop_started,
       models: config.agents.find((a) => a.name === "cli")?.models,
       model_call_performed: false,
     };
   } finally {
+    clearTimeout(deadline);
     b?.dispose();
   }
 }
@@ -817,6 +830,7 @@ if (require.main === module)
       console.error(
         JSON.stringify({
           ok: false,
+          hint: STARTUP_HINTS[e.code] || "请检查WorkBuddy登录、桌面授权或账号模型目录；未自动重提任务",
           error_code: /^[A-Z0-9_]+$/.test(e.code || "")
             ? e.code
             : "WORKER_COMMAND_FAILED",

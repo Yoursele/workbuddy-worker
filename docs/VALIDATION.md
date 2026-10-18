@@ -18,3 +18,8 @@ No task IDs, machine paths, chat transcripts, account identifiers, private sourc
 ## Not established
 
 Compatibility with every WorkBuddy release/account/model, Linux/macOS live usage, sustained parallel operation, restart/PID-reuse recovery, real billing deltas, formal security isolation or strategy/trading effectiveness.
+
+
+## 0.1.1 自动启动验收
+
+新增启动就绪层，未运行时启动WorkBuddy.exe，已运行时复用。51项本地自动检查通过，涵盖首次连接、单次启动、有界等待、取消、启动失败、进程查询失败与信任/授权拒绝不重启。真实doctor首次返回desktop_started=true且成功读取账号模型目录，第二次应复用；这些检查不发送模型消息。其他Windows/WorkBuddy版本、永不弹窗和同时多进程冷启动行为未验证。

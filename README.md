@@ -2,7 +2,7 @@
 
 让 Codex 把边界明确的机械任务交给 **Windows WorkBuddy 后台处理**，随后查询状态、取回结果并独立复核。
 
-**0.1.0 / Windows 实验性版本 / MIT / 零运行时第三方依赖**
+**0.1.1 / Windows 实验性版本 / MIT / 零运行时第三方依赖**
 
 ## 能做什么
 
@@ -16,7 +16,7 @@
 ## 环境
 
 - Windows 10/11，标准用户目录安装的 WorkBuddy 桌面端
-- 桌面已登录并保持运行，内置 `codebuddy-lite-wb.mjs` 与托管Node可用
+- 已安装并完成首次登录，未运行时自动尝试后台启动；内置 `codebuddy-lite-wb.mjs` 与托管Node可用
 - Node.js 22+ 用于控制器和离线测试
 - 当前只在一台 Windows 安装上实测，其他版本需先运行 doctor
 
@@ -95,3 +95,8 @@ npm run package:skill
 ## 来源与许可
 
 复用 Workbuddian 的 MIT 宿主代理和模型目录模块，未分发 WorkBuddy 自身软件。详见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)、[LICENSE](LICENSE) 和 [scripts/vendor/LICENSE](scripts/vendor/LICENSE)。
+
+
+## 自动启动（0.1.1）
+
+doctor与任务执行都会先连接现有本地代理；代理未就绪时检查WorkBuddy进程，未运行则以隐藏进程选项及`--start-minimized`启动安装目录中的WorkBuddy.exe，有限等待代理就绪。无需预先手动打开窗口。首次登录/授权和模型目录可用性仍由宿主处理，不读取登录数据库、不导出凭据。Windows隐藏选项不能保证所有WorkBuddy版本永不弹窗；已运行的应用不会被关闭或重启。安装位置仍限于当前支持的用户级安装路径。启动等待不发送模型消息，也不会重试不确定任务。
