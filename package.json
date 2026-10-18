@@ -1,6 +1,6 @@
 {
   "name": "workbuddy-worker",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": true,
   "description": "Bounded Windows WorkBuddy background text-worker skill for Codex",
   "license": "MIT",
